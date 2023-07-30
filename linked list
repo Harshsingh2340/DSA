@@ -1,0 +1,165 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+typedef struct {
+    Node* head;
+    Node* tail;
+    int size;
+} LinkedList;
+
+Node* createNode(int value) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+LinkedList* createLinkedList() {
+    LinkedList* list = (LinkedList*)malloc(sizeof(LinkedList));
+    list->head = NULL;
+    list->tail = NULL;
+    list->size = 0;
+    return list;
+}
+
+void insertAtEnd(LinkedList* list, int value) {
+    Node* newNode = createNode(value);
+    if (list->head == NULL) {
+        list->head = newNode;
+        list->tail = newNode;
+    } else {
+        list->tail->next = newNode;
+        list->tail = newNode;
+    }
+    list->size++;
+}
+
+void insertAtStart(LinkedList* list, int value) {
+    Node* newNode = createNode(value);
+    newNode->next = list->head;
+    list->head = newNode;
+    if (list->tail == NULL) {
+        list->tail = newNode;
+    }
+    list->size++;
+}
+
+void insertAtMiddle(LinkedList* list, int value, int position) {
+    if (position <= 0 || position >= list->size) {
+        printf("Invalid position!\n");
+        return;
+    }
+
+    Node* newNode = createNode(value);
+    Node* current = list->head;
+    for (int i = 1; i < position; i++) {
+        current = current->next;
+    }
+
+    newNode->next = current->next;
+    current->next = newNode;
+    list->size++;
+}
+
+void deleteElement(LinkedList* list, int position) {
+    if (position < 0 || position >= list->size) {
+        printf("Invalid position!\n");
+        return;
+    }
+
+    Node* current = list->head;
+    if (position == 0) {
+        list->head = current->next;
+        free(current);
+        if (list->size == 1) {
+            list->tail = NULL;
+        }
+    } else {
+        Node* previous = NULL;
+        for (int i = 0; i < position; i++) {
+            previous = current;
+            current = current->next;
+        }
+        previous->next = current->next;
+        free(current);
+        if (position == list->size - 1) {
+            list->tail = previous;
+        }
+    }
+    list->size--;
+}
+
+void updateElement(LinkedList* list, int position, int value) {
+    if (position < 0 || position >= list->size) {
+        printf("Invalid position!\n");
+        return;
+    }
+
+    Node* current = list->head;
+    for (int i = 0; i < position; i++) {
+        current = current->next;
+    }
+    current->data = value;
+}
+
+void displayList(LinkedList* list) {
+    Node* current = list->head;
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+void freeLinkedList(LinkedList* list) {
+    Node* current = list->head;
+    while (current != NULL) {
+        Node* temp = current;
+        current = current->next;
+        free(temp);
+    }
+    free(list);
+}
+
+int main() {
+    LinkedList* list = createLinkedList();
+
+    insertAtEnd(list, 10);
+    insertAtEnd(list, 20);
+    insertAtEnd(list, 30);
+
+    printf("Linked List: ");
+    displayList(list);
+
+    insertAtStart(list, 5);
+    insertAtStart(list, 2);
+
+    printf("Linked List after inserting at the start: ");
+    displayList(list);
+
+    insertAtMiddle(list, 15, 2);
+    insertAtMiddle(list, 25, 4);
+
+    printf("Linked List after inserting at the middle: ");
+    displayList(list);
+
+    deleteElement(list, 0);
+    deleteElement(list, 3);
+
+    printf("Linked List after deleting elements: ");
+    displayList(list);
+
+    updateElement(list, 2, 35);
+    updateElement(list, 0, 3);
+
+    printf("Linked List after updating elements: ");
+    displayList(list);
+
+    freeLinkedList(list);
+    return 0;
+}
