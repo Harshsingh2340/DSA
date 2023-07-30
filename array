@@ -1,1 +1,119 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int* arr;
+    int capacity;
+    int size;
+} DynamicArray;
+
+DynamicArray* createDynamicArray(int capacity) {
+    DynamicArray* array = (DynamicArray*)malloc(sizeof(DynamicArray));
+    array->arr = (int*)malloc(capacity * sizeof(int));
+    array->capacity = capacity;
+    array->size = 0;
+    return array;
+}
+
+void freeDynamicArray(DynamicArray* array) {
+    free(array->arr);
+    free(array);
+}
+
+void resizeDynamicArray(DynamicArray* array) {
+    array->capacity *= 2;
+    array->arr = (int*)realloc(array->arr, array->capacity * sizeof(int));
+}
+
+void insertElement(DynamicArray* array, int position, int value) {
+    if (array->size >= array->capacity) {
+        resizeDynamicArray(array);
+    }
+    for (int i = array->size; i > position; i--) {
+        array->arr[i] = array->arr[i - 1];
+    }
+    array->arr[position] = value;
+    array->size++;
+}
+
+void deleteElement(DynamicArray* array, int position) {
+    for (int i = position; i < array->size - 1; i++) {
+        array->arr[i] = array->arr[i + 1];
+    }
+    array->size--;
+}
+
+void updateElement(DynamicArray* array, int position, int value) {
+    array->arr[position] = value;
+}
+
+void displayArray(DynamicArray* array) {
+    for (int i = 0; i < array->size; i++) {
+        printf("%d ", array->arr[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int capacity, choice, position, value;
+
+    printf("Enter the initial capacity of the dynamic array: ");
+    scanf("%d", &capacity);
+
+    DynamicArray* array = createDynamicArray(capacity);
+
+    printf("Enter elements of the dynamic array:\n");
+    int num;
+    while (scanf("%d", &num) == 1) {
+        insertElement(array, array->size, num);
+    }
+
+    printf("Array contents: ");
+    displayArray(array);
+
+    printf("\n1. Insert at Middle\n2. Insert at End\n3. Insert at Start\n");
+    printf("4. Delete an Element\n5. Update an Element\nEnter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            printf("Enter the value to insert: ");
+            scanf("%d", &value);
+            printf("Enter the position to insert: ");
+            scanf("%d", &position);
+            insertElement(array, position, value);
+            break;
+        case 2:
+            printf("Enter the value to insert at the end: ");
+            scanf("%d", &value);
+            insertElement(array, array->size, value);
+            break;
+        case 3:
+            printf("Enter the value to insert at the start: ");
+            scanf("%d", &value);
+            insertElement(array, 0, value);
+            break;
+        case 4:
+            printf("Enter the position to delete: ");
+            scanf("%d", &position);
+            deleteElement(array, position);
+            break;
+        case 5:
+            printf("Enter the new value: ");
+            scanf("%d", &value);
+            printf("Enter the position to update: ");
+            scanf("%d", &position);
+            updateElement(array, position, value);
+            break;
+        default:
+            printf("Invalid choice!\n");
+            break;
+    }
+
+    printf("Updated Array contents: ");
+    displayArray(array);
+
+    freeDynamicArray(array);
+    return 0;
+}
 
