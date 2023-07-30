@@ -1,0 +1,140 @@
+#include <stdio.h>
+
+// Function prototypes
+void bubbleSort(int arr[], int size);
+void displayArray(int arr[], int size);
+int insertElement(int arr[], int *size, int position, int value);
+int deleteElement(int arr[], int *size, int position);
+int updateElement(int arr[], int size, int position, int value);
+
+int main() {
+    int arr[100], size = 0, choice, position, value;
+
+    printf("Enter the number of elements (up to 100): ");
+    scanf("%d", &size);
+
+    printf("Enter %d elements:\n", size);
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    bubbleSort(arr, size);
+    printf("Sorted array: ");
+    displayArray(arr, size);
+
+    printf("\n1. Insert at Middle\n2. Insert at End\n3. Insert at Start\n");
+    printf("4. Delete an Element\n5. Update an Element\nEnter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            printf("Enter the value to insert: ");
+            scanf("%d", &value);
+            printf("Enter the position to insert: ");
+            scanf("%d", &position);
+            if (insertElement(arr, &size, position, value))
+                displayArray(arr, size);
+            else
+                printf("Invalid position!\n");
+            break;
+        case 2:
+            printf("Enter the value to insert at the end: ");
+            scanf("%d", &value);
+            if (insertElement(arr, &size, size, value))
+                displayArray(arr, size);
+            else
+                printf("Array is full!\n");
+            break;
+        case 3:
+            printf("Enter the value to insert at the start: ");
+            scanf("%d", &value);
+            if (insertElement(arr, &size, 0, value))
+                displayArray(arr, size);
+            else
+                printf("Array is full!\n");
+            break;
+        case 4:
+            printf("Enter the position to delete: ");
+            scanf("%d", &position);
+            if (deleteElement(arr, &size, position))
+                displayArray(arr, size);
+            else
+                printf("Invalid position!\n");
+            break;
+        case 5:
+            printf("Enter the new value: ");
+            scanf("%d", &value);
+            printf("Enter the position to update: ");
+            scanf("%d", &position);
+            if (updateElement(arr, size, position, value))
+                displayArray(arr, size);
+            else
+                printf("Invalid position!\n");
+            break;
+        default:
+            printf("Invalid choice!\n");
+    }
+
+    return 0;
+}
+
+// Bubble Sort
+void bubbleSort(int arr[], int size) {
+    int temp, i, j;
+    for (i = 0; i < size - 1; i++) {
+        for (j = 0; j < size - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Display the array
+void displayArray(int arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+
+// Insert an element in the array at a given position
+int insertElement(int arr[], int *size, int position, int value) {
+    if (*size >= 100 || position > *size || position < 0) {
+        return 0; // Operation failed
+    }
+    
+    for (int i = *size; i > position; i--) {
+        arr[i] = arr[i - 1];
+    }
+
+    arr[position] = value;
+    (*size)++;
+    return 1; // Operation successful
+}
+
+// Delete an element from the array at a given position
+int deleteElement(int arr[], int *size, int position) {
+    if (*size == 0 || position >= *size || position < 0) {
+        return 0; // Operation failed
+    }
+
+    for (int i = position; i < *size - 1; i++) {
+        arr[i] = arr[i + 1];
+    }
+
+    (*size)--;
+    return 1; // Operation successful
+}
+
+// Update an element in the array at a given position
+int updateElement(int arr[], int size, int position, int value) {
+    if (position >= size || position < 0) {
+        return 0; // Operation failed
+    }
+
+    arr[position] = value;
+    return 1; // Operation successful
+}
