@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_HEAP_SIZE 100
+
+typedef struct MinHeap {
+    int heap[MAX_HEAP_SIZE];
+    int size;
+} MinHeap;
+
+int parent(int i) { return (i - 1) / 2; }
+int leftChild(int i) { return 2 * i + 1; }
+int rightChild(int i) { return 2 * i + 2; }
+
+MinHeap* createMinHeap() {
+    MinHeap* minHeap = (MinHeap*)malloc(sizeof(MinHeap));
+    minHeap->size = 0;
+    return minHeap;
+}
+
+void swap(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void heapifyUp(MinHeap* minHeap, int index) {
+    int parentIndex = parent(index);
+    if (index > 0 && minHeap->heap[index] < minHeap->heap[parentIndex]) {
+        swap(&minHeap->heap[index], &minHeap->heap[parentIndex]);
+        heapifyUp(minHeap, parentIndex);
+    }
+}
+
+void insert(MinHeap* minHeap, int value) {
+    if (minHeap->size >= MAX_HEAP_SIZE) {
+        printf("Heap is full. Cannot insert.\n");
+        return;
+    }
+
+    minHeap->heap[minHeap->size] = value;
+    heapifyUp(minHeap, minHeap->size);
+    minHeap->size++;
+}
+
+void heapifyDown(MinHeap* minHeap, int index) {
+    int smallest = index;
+    int left = leftChild(index);
+    int right = rightChild(index);
+
+    if (left < minHeap->size && minHeap->heap[left] < minHeap->heap[smallest]) {
+        smallest = left;
+    }
+    if (right < minHeap->size && minHeap->heap[right] < minHeap->heap[smallest]) {
+        smallest = right;
+    }
+
+    if (smallest != index) {
+        swap(&minHeap->heap[index], &minHeap->heap[smallest]);
+        heapifyDown(minHeap, smallest);
+    }
+}
+
+int extractMin(MinHeap* minHeap) {
+    if (minHeap->size <= 0) {
+        printf("Heap is empty. Cannot extract minimum.\n");
+        return -1; // Or any suitable error value
+    }
+
+    int minValue = minHeap->heap[0];
+    minHeap->heap[0] = minHeap->heap[minHeap->size - 1];
+    minHeap->size--;
+    heapifyDown(minHeap, 0);
+
+    return minValue;
+}
+
+void freeMinHeap(MinHeap* minHeap) {
+    free(minHeap);
+}
+
+int main() {
+    MinHeap* minHeap = createMinHeap();
+
+    insert(minHeap, 10);
+    insert(minHeap, 5);
+    insert(minHeap, 15);
+    insert(minHeap, 20);
+    insert(minHeap, 8);
+
+    printf("Min Heap: ");
+    for (int i = 0; i < minHeap->size; i++) {
+        printf("%d ", minHeap->heap[i]);
+    }
+    printf("\n");
+
+    int min = extractMin(minHeap);
+    printf("Extracted Minimum: %d\n", min);
+
+    printf("Min Heap after Extraction: ");
+    for (int i = 0; i < minHeap->size; i++) {
+        printf("%d ", minHeap->heap[i]);
+    }
+    printf("\n");
+
+    freeMinHeap(minHeap);
+    return 0;
+}
