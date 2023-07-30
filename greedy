@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+int coinChangeGreedy(int coins[], int numCoins, int amount) {
+    int count = 0;
+    for (int i = numCoins - 1; i >= 0; i--) {
+        while (amount >= coins[i]) {
+            amount -= coins[i];
+            count++;
+        }
+    }
+    return count;
+}
+
+int main() {
+    int coins[] = {1, 5, 10, 25}; // Coin denominations: 1 cent, 5 cents, 10 cents, 25 cents
+    int numCoins = sizeof(coins) / sizeof(coins[0]);
+
+    int amount = 37; // Amount in cents
+
+    int minCoins = coinChangeGreedy(coins, numCoins, amount);
+
+    printf("Minimum number of coins needed to make %d cents: %d\n", amount, minCoins);
+
+    return 0;
+}
