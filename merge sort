@@ -1,0 +1,188 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Dynamic array structure
+typedef struct {
+    int* arr;
+    int capacity;
+    int size;
+} DynamicArray;
+
+// Function prototypes
+DynamicArray* createDynamicArray(int capacity);
+void freeDynamicArray(DynamicArray* array);
+void resizeDynamicArray(DynamicArray* array);
+void insertElement(DynamicArray* array, int position, int value);
+void deleteElement(DynamicArray* array, int position);
+void updateElement(DynamicArray* array, int position, int value);
+void mergeSort(int arr[], int left, int right);
+void merge(int arr[], int left, int middle, int right);
+void displayArray(DynamicArray* array);
+
+int main() {
+    int capacity, choice, position, value;
+    
+    printf("Enter the initial capacity of the dynamic array: ");
+    scanf("%d", &capacity);
+    
+    DynamicArray* array = createDynamicArray(capacity);
+    
+    printf("Enter elements of the dynamic array:\n");
+    int num;
+    while (scanf("%d", &num) == 1) {
+        insertElement(array, array->size, num);
+    }
+    
+    mergeSort(array->arr, 0, array->size - 1);
+    printf("Sorted array: ");
+    displayArray(array);
+    
+    printf("\n1. Insert at Middle\n2. Insert at End\n3. Insert at Start\n");
+    printf("4. Delete an Element\n5. Update an Element\nEnter your choice: ");
+    scanf("%d", &choice);
+    
+    switch (choice) {
+        case 1:
+            printf("Enter the value to insert: ");
+            scanf("%d", &value);
+            printf("Enter the position to insert: ");
+            scanf("%d", &position);
+            insertElement(array, position, value);
+            displayArray(array);
+            break;
+        case 2:
+            printf("Enter the value to insert at the end: ");
+            scanf("%d", &value);
+            insertElement(array, array->size, value);
+            displayArray(array);
+            break;
+        case 3:
+            printf("Enter the value to insert at the start: ");
+            scanf("%d", &value);
+            insertElement(array, 0, value);
+            displayArray(array);
+            break;
+        case 4:
+            printf("Enter the position to delete: ");
+            scanf("%d", &position);
+            deleteElement(array, position);
+            displayArray(array);
+            break;
+        case 5:
+            printf("Enter the new value: ");
+            scanf("%d", &value);
+            printf("Enter the position to update: ");
+            scanf("%d", &position);
+            updateElement(array, position, value);
+            displayArray(array);
+            break;
+        default:
+            printf("Invalid choice!\n");
+    }
+    
+    freeDynamicArray(array);
+    return 0;
+}
+
+// Dynamic array functions
+DynamicArray* createDynamicArray(int capacity) {
+    DynamicArray* array = (DynamicArray*)malloc(sizeof(DynamicArray));
+    array->arr = (int*)malloc(capacity * sizeof(int));
+    array->capacity = capacity;
+    array->size = 0;
+    return array;
+}
+
+void freeDynamicArray(DynamicArray* array) {
+    free(array->arr);
+    free(array);
+}
+
+void resizeDynamicArray(DynamicArray* array) {
+    array->capacity *= 2;
+    array->arr = (int*)realloc(array->arr, array->capacity * sizeof(int));
+}
+
+void insertElement(DynamicArray* array, int position, int value) {
+    if (array->size >= array->capacity) {
+        resizeDynamicArray(array);
+    }
+    
+    for (int i = array->size; i > position; i--) {
+        array->arr[i] = array->arr[i - 1];
+    }
+    
+    array->arr[position] = value;
+    array->size++;
+}
+
+void deleteElement(DynamicArray* array, int position) {
+    for (int i = position; i < array->size - 1; i++) {
+        array->arr[i] = array->arr[i + 1];
+    }
+    
+    array->size--;
+}
+
+void updateElement(DynamicArray* array, int position, int value) {
+    array->arr[position] = value;
+}
+
+// Merge Sort functions
+void mergeSort(int arr[], int left, int right) {
+    if (left < right) {
+        int middle = left + (right - left) / 2;
+        mergeSort(arr, left, middle);
+        mergeSort(arr, middle + 1, right);
+        merge(arr, left, middle, right);
+    }
+}
+
+void merge(int arr[], int left, int middle, int right) {
+    int i, j, k;
+    int n1 = middle - left + 1;
+    int n2 = right - middle;
+    
+    int L[n1], R[n2];
+    
+    for (i = 0; i < n1; i++)
+        L[i] = arr[left + i];
+    for (j = 0; j < n2; j++)
+        R[j] = arr[middle + 1 + j];
+    
+    i = 0;
+    j = 0;
+    k = left;
+    
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        }
+        else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+    
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+    
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+// Display the array
+void displayArray(DynamicArray* array) {
+    for (int i = 0; i < array->size; i++) {
+        printf("%d ", array->arr[i]);
+    }
+    printf("\n");
+}
